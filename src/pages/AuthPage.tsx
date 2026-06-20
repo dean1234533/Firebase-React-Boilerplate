@@ -126,6 +126,10 @@ export function AuthPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            {/* Hidden honeypot inputs — browser autofill targets these instead of the real fields */}
+            <input type="text" className="hidden" aria-hidden="true" tabIndex={-1} />
+            <input type="password" className="hidden" aria-hidden="true" tabIndex={-1} />
+
             {!isLogin && (
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-slate-700">Full name</label>
@@ -162,6 +166,7 @@ export function AuthPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="new-password"
                 className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
               />
             </div>
