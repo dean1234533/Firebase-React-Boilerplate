@@ -4,7 +4,7 @@
 
 A production-ready React + Firebase boilerplate with authentication, Firestore CRUD, and Vercel deployment built in. Everything is wired up, secured, and structured so you can ship your SaaS without fighting the stack.
 
-**Live Demo:** [your-demo-link-here]
+**Live Demo:** [firebase-react-boilerplate.vercel.app](https://firebase-react-boilerplate.vercel.app)
 
 ---
 
