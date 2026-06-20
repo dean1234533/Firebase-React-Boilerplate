@@ -6,7 +6,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { logout } from '@/services/AuthService';
+import { signOut } from '@/services/AuthService';
 import { getItems, addItem, deleteItem, Item } from '@/services/CRUDService';
 
 export function DashboardPage() {
@@ -84,8 +84,8 @@ export function DashboardPage() {
   // ─── Logout ─────────────────────────────────────────────────────────────────
 
   async function handleLogout() {
-    await logout();
-    navigate('/login');
+    await signOut();
+    navigate('/auth');
   }
 
   // ─── Render ─────────────────────────────────────────────────────────────────

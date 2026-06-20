@@ -14,7 +14,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
+  signOut as firebaseSignOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
@@ -36,9 +36,26 @@ export interface AuthResult {
   error: string | null;
 }
 
-// ─── Email / Password ──────────────────────────────────────────────────────────
+// ─── Error Messages ────────────────────────────────────────────────────────────
 
-export async function registerWithEmail(
+const ERROR_MESSAGES: Record<string, string> = {
+  'auth/user-not-found':        'No account found with that email.',
+  'auth/wrong-password':        'Incorrect password.',
+  'auth/invalid-email':         'Please enter a valid email address.',
+  'auth/email-already-in-use':  'An account with this email already exists.',
+  'auth/weak-password':         'Password must be at least 6 characters.',
+  'auth/too-many-requests':     'Too many attempts. Please try again later.',
+  'auth/invalid-credential':    'Invalid email or password.',
+  'auth/network-request-failed':'Network error. Check your connection.',
+};
+
+export function friendlyError(code: string): string {
+  return ERROR_MESSAGES[code] ?? `Authentication error (${code})`;
+}
+
+// ─── Sign Up ───────────────────────────────────────────────────────────────────
+
+export async function signUpWithEmail(
   email: string,
   password: string,
   displayName?: string
@@ -54,11 +71,11 @@ export async function registerWithEmail(
       await updateProfile(credential.user, { displayName });
     }
 
-    console.log('[AuthService] registerWithEmail: success', { uid: credential.user.uid });
+    console.log('[AuthService] signUpWithEmail: success', { uid: credential.user.uid });
     return { user: credential.user, error: null };
   } catch (err) {
     const error = err as FirebaseError;
-    console.error('[AuthService] registerWithEmail: FAILED', {
+    console.error('[AuthService] signUpWithEmail: FAILED', {
       code: error.code,
       message: error.message,
     });
@@ -66,7 +83,9 @@ export async function registerWithEmail(
   }
 }
 
-export async function loginWithEmail(
+// ─── Sign In ───────────────────────────────────────────────────────────────────
+
+export async function signInWithEmail(
   email: string,
   password: string
 ): Promise<AuthResult> {
@@ -76,11 +95,11 @@ export async function loginWithEmail(
       email,
       password
     );
-    console.log('[AuthService] loginWithEmail: success', { uid: credential.user.uid });
+    console.log('[AuthService] signInWithEmail: success', { uid: credential.user.uid });
     return { user: credential.user, error: null };
   } catch (err) {
     const error = err as FirebaseError;
-    console.error('[AuthService] loginWithEmail: FAILED', {
+    console.error('[AuthService] signInWithEmail: FAILED', {
       code: error.code,
       message: error.message,
     });
@@ -90,17 +109,16 @@ export async function loginWithEmail(
 
 // ─── Google OAuth ──────────────────────────────────────────────────────────────
 
-export async function loginWithGoogle(): Promise<AuthResult> {
+export async function signInWithGoogle(): Promise<AuthResult> {
   try {
     const provider = new GoogleAuthProvider();
     const credential: UserCredential = await signInWithPopup(auth, provider);
-    console.log('[AuthService] loginWithGoogle: success', { uid: credential.user.uid });
+    console.log('[AuthService] signInWithGoogle: success', { uid: credential.user.uid });
     return { user: credential.user, error: null };
   } catch (err) {
     const error = err as FirebaseError;
-    // auth/popup-closed-by-user is expected UX, not an error worth logging loudly.
     if (error.code !== 'auth/popup-closed-by-user') {
-      console.error('[AuthService] loginWithGoogle: FAILED', {
+      console.error('[AuthService] signInWithGoogle: FAILED', {
         code: error.code,
         message: error.message,
       });
@@ -111,14 +129,14 @@ export async function loginWithGoogle(): Promise<AuthResult> {
 
 // ─── Sign Out ──────────────────────────────────────────────────────────────────
 
-export async function logout(): Promise<{ error: string | null }> {
+export async function signOut(): Promise<{ error: string | null }> {
   try {
-    await signOut(auth);
-    console.log('[AuthService] logout: success');
+    await firebaseSignOut(auth);
+    console.log('[AuthService] signOut: success');
     return { error: null };
   } catch (err) {
     const error = err as FirebaseError;
-    console.error('[AuthService] logout: FAILED', {
+    console.error('[AuthService] signOut: FAILED', {
       code: error.code,
       message: error.message,
     });
@@ -147,10 +165,6 @@ export async function sendPasswordReset(
 
 // ─── Auth State Observer ───────────────────────────────────────────────────────
 
-/**
- * Subscribe to auth state changes. Returns an unsubscribe function.
- * Use this in AuthContext — do NOT call onAuthStateChanged in components.
- */
 export function subscribeToAuthState(
   callback: (user: User | null) => void
 ): Unsubscribe {

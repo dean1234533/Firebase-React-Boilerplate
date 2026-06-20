@@ -14,7 +14,7 @@ interface Props {
   redirectTo?: string;
 }
 
-export function ProtectedRoute({ children, redirectTo = '/login' }: Props) {
+export function ProtectedRoute({ children, redirectTo = '/auth' }: Props) {
   const { user, loading } = useAuth();
 
   if (loading) {

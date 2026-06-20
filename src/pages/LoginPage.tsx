@@ -1,11 +1,11 @@
 /**
- * LoginPage.tsx — Demo login page wired to AuthService.
- * No Firebase SDK imports here — all auth logic goes through the service layer.
+ * LoginPage.tsx — Deprecated. Use AuthPage.tsx instead.
+ * Kept for reference. Not used in routing.
  */
 
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginWithEmail, loginWithGoogle } from '@/services/AuthService';
+import { signInWithEmail, signInWithGoogle, friendlyError } from '@/services/AuthService';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error: authError } = await loginWithEmail(email, password);
+    const { error: authError } = await signInWithEmail(email, password);
     if (authError) {
       setError(friendlyError(authError));
     } else {
@@ -32,7 +32,7 @@ export function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error: authError } = await loginWithGoogle();
+    const { error: authError } = await signInWithGoogle();
     if (authError && authError !== 'auth/popup-closed-by-user') {
       setError(friendlyError(authError));
     } else if (!authError) {
@@ -92,15 +92,4 @@ export function LoginPage() {
       </div>
     </div>
   );
-}
-
-function friendlyError(code: string): string {
-  const map: Record<string, string> = {
-    'auth/user-not-found': 'No account found with that email.',
-    'auth/wrong-password': 'Incorrect password.',
-    'auth/invalid-email': 'Please enter a valid email address.',
-    'auth/too-many-requests': 'Too many attempts. Try again later.',
-    'auth/invalid-credential': 'Invalid email or password.',
-  };
-  return map[code] ?? `Authentication error (${code})`;
 }
