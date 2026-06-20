@@ -19,7 +19,7 @@ Paste the prompt below into Claude, Cursor, Copilot, or any AI assistant before 
 
 You are working in a React + Firebase SaaS boilerplate with a strict layered architecture. Read all rules before writing any code.
 
-**Stack:** React 18, TypeScript (strict), Vite, Firebase v11, Tailwind CSS v3 (Inter font), React Router v6, deployed on Vercel.
+**Stack:** React 18, TypeScript (strict), Vite, Firebase v11, Tailwind CSS v3 (Inter font, `darkMode: 'class'`), React Router v6, Stripe, deployed on Vercel.
 
 **Absolute rules — never break these:**
 
@@ -29,34 +29,46 @@ You are working in a React + Firebase SaaS boilerplate with a strict layered arc
 
 3. Auth state is read via `const { user, loading, justSignedOut } = useAuth()` imported from `@/hooks/useAuth`. Never call `onAuthStateChanged` outside `src/context/AuthContext.tsx`.
 
-4. Every function in `src/services/` must have a `try/catch` block. Every catch block must log `error.code` and `error.message` with a `[ServiceName]` prefix:
+4. Dark mode state is read via `const { theme, toggleTheme } = useTheme()` imported from `@/context/ThemeContext`. Never manage dark mode with local `useState`. Never add or remove the `dark` class manually — `ThemeContext` handles that.
+
+5. Every function in `src/services/` must have a `try/catch` block. Every catch block must log `error.code` and `error.message` with a `[ServiceName]` prefix:
    ```ts
    console.error('[ServiceName] functionName: FAILED', { code: error.code, message: error.message });
    ```
 
-5. All service functions must have explicit TypeScript return types. Use `FirebaseError` from `firebase/app` for error typing. No `any`.
+6. All service functions must have explicit TypeScript return types. Use `FirebaseError` from `firebase/app` for error typing. No `any`.
 
-6. New Firestore collections always get a corresponding rule in `firestore.rules` using `isOwner(userId)` and `hasOnlyFields([...])`. The default deny rule at the bottom is never removed. Never write `allow read, write: if true`.
+7. New Firestore collections always get a corresponding rule in `firestore.rules` using `isOwner(userId)` and `hasOnlyFields([...])`. The default deny rule at the bottom is never removed. Never write `allow read, write: if true`.
 
-7. For update rules, use `request.resource.data.diff(resource.data).affectedKeys().hasOnly([...])` — not `hasOnlyFields()` — to check only the fields being changed, not the full document.
+8. For update rules, use `request.resource.data.diff(resource.data).affectedKeys().hasOnly([...])` — not `hasOnlyFields()` — to check only the fields being changed, not the full document.
 
-8. All files in `src/` are `.ts` or `.tsx`. No `.js` files.
+9. All files in `src/` are `.ts` or `.tsx`. No `.js` files.
 
-9. Environment variables use `import.meta.env.VITE_*`. Never hardcode credentials.
+10. Environment variables use `import.meta.env.VITE_*` for frontend. Server-side secrets (e.g. `STRIPE_SECRET_KEY`) live in `api/` only and are never imported in `src/`.
+
+11. Stripe API calls go through Vercel serverless functions in `api/`. Never call Stripe directly from the frontend.
 
 **Folder structure:**
 ```
 src/
 ├── firebase/firebase.ts          ← SDK init only. Exports: app, auth, db.
-├── services/AuthService.ts       ← signUpWithEmail, signInWithEmail, signInWithGoogle, signOut, subscribeToAuthState
+├── services/AuthService.ts       ← signUpWithEmail, signInWithEmail, signInWithGoogle, signOut
 ├── services/FirestoreService.ts  ← getDocument, setDocument, addDocument, updateDocument, deleteDocument, queryCollection
 ├── services/CRUDService.ts       ← Domain service for users/{uid}/items — wraps FirestoreService helpers
+├── services/SettingsService.ts   ← updateDisplayName, deleteAccount
+├── services/StripeService.ts     ← redirectToCheckout (calls /api/create-checkout-session)
 ├── context/AuthContext.tsx       ← Single onAuthStateChanged listener. Exposes user, loading, justSignedOut.
+├── context/ThemeContext.tsx      ← Dark mode toggle, persisted to localStorage. Exposes theme, toggleTheme.
 ├── hooks/useAuth.ts              ← Re-exports useAuth from AuthContext
 ├── components/ProtectedRoute.tsx ← Redirects unauthenticated users to /auth
 └── pages/
     ├── AuthPage.tsx              ← Login + Sign Up toggle
-    └── DashboardPage.tsx         ← Protected CRUD dashboard
+    ├── DashboardPage.tsx         ← Protected CRUD dashboard
+    ├── SettingsPage.tsx          ← Profile update + account deletion
+    └── BillingPage.tsx           ← Stripe pricing page
+
+api/
+└── create-checkout-session.ts   ← Vercel serverless function (Stripe backend)
 ```
 
 **Pattern to follow for any new Firestore-backed feature:**
@@ -102,7 +114,25 @@ export async function addThing(uid: string, name: string): Promise<ServiceResult
 import { subscribeToThings, addThing } from '@/services/ThingService';
 ```
 
-**Step 3 — Add Firestore rules above the default deny block**
+**Step 3 — Apply dark mode classes to every new page**
+
+Every page must use `dark:` variants on background, text, borders, and inputs:
+```tsx
+import { useTheme } from '@/context/ThemeContext';
+
+const { theme, toggleTheme } = useTheme();
+
+// Page wrapper
+<div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+// Header
+<header className="border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80">
+// Text
+<h1 className="text-slate-900 dark:text-white">
+// Input
+<input className="border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" />
+```
+
+**Step 4 — Add Firestore rules above the default deny block**
 ```js
 match /users/{userId}/things/{thingId} {
   allow read:   if isOwner(userId);
@@ -112,9 +142,18 @@ match /users/{userId}/things/{thingId} {
 }
 ```
 
-**Step 4 — Deploy the rules**
-```bash
-firebase deploy --only firestore:rules
+**Step 5 — Add the route to `src/App.tsx`**
+```tsx
+import { ThingPage } from '@/pages/ThingPage';
+
+<Route
+  path="/things"
+  element={
+    <ProtectedRoute>
+      <ThingPage />
+    </ProtectedRoute>
+  }
+/>
 ```
 
 **What to reject if the AI generates it:**
@@ -123,7 +162,9 @@ firebase deploy --only firestore:rules
 - `allow read, write: if true` anywhere in `firestore.rules`
 - `catch (err) { console.error(err) }` without logging `error.code`
 - `useState` for auth state — always use `useAuth()`
-- Hardcoded Firebase credentials
+- `useState` for dark mode — always use `useTheme()`
+- Hardcoded Firebase or Stripe credentials
+- Stripe secret key imported in any `src/` file
 
 Now here is the feature I want to add:
 

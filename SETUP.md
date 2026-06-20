@@ -1,6 +1,6 @@
 # SETUP.md — From Zero to Deployed
 
-Follow these steps in order. Takes about 15 minutes.
+Follow these steps in order. Takes about 20 minutes.
 
 ---
 
@@ -34,16 +34,7 @@ Follow these steps in order. Takes about 15 minutes.
 
 **Deploy the security rules:**
 
-The `firestore.rules` file in this repo is production-ready. Deploy it now:
-
-```bash
-npm install -g firebase-tools
-firebase login
-firebase use --add        # select your project, set alias to "default"
-firebase deploy --only firestore:rules
-```
-
-Or paste the contents of `firestore.rules` directly into the Firebase Console → Firestore → **Rules** tab and click **Publish**.
+Paste the contents of `firestore.rules` directly into the Firebase Console → Firestore → **Rules** tab and click **Publish**.
 
 ---
 
@@ -66,7 +57,27 @@ const firebaseConfig = {
 
 ---
 
-## Step 5 — Configure Environment Variables
+## Step 5 — Set Up Stripe (Test Mode)
+
+This project uses **Stripe test mode**. No real charges are made until you switch to live keys.
+
+1. Go to [dashboard.stripe.com/test/dashboard](https://dashboard.stripe.com/test/dashboard)
+2. **Get your test secret key:**
+   - Sidebar → **Developers → API keys**
+   - Copy the **Secret key** (`sk_test_...`)
+
+3. **Create your products:**
+   - Sidebar → **Product catalog → Add product**
+   - Create **Starter** — $9/month recurring → Save
+   - Copy the **Price ID** (`price_...`) from the pricing section
+   - Repeat for **Pro** — $29/month recurring
+   - Copy that Price ID too
+
+> Keep Stripe in test mode until you're ready to go live. Switch to live keys (`sk_live_...`) in Vercel env vars when launching.
+
+---
+
+## Step 6 — Configure Environment Variables
 
 **For local development:**
 
@@ -74,15 +85,24 @@ const firebaseConfig = {
 cp .env.example .env.local
 ```
 
-Open `.env.local` and paste your values:
+Open `.env.local` and fill in all values:
 
 ```bash
+# Firebase
 VITE_FIREBASE_API_KEY=AIza...
 VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
 VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:abc123
+
+# Stripe (test mode)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PRICE_STARTER=price_...
+STRIPE_PRICE_PRO=price_...
+
+# App URL (for Stripe redirect after checkout)
+VITE_APP_URL=http://localhost:3000
 ```
 
 > `.env.local` is already in `.gitignore`. Never commit it.
@@ -98,13 +118,16 @@ Open `http://localhost:3000`, create an account, and confirm login works before 
 
 ---
 
-## Step 6 — Deploy to Vercel
+## Step 7 — Deploy to Vercel
 
 **Option A — Vercel Dashboard (recommended)**
 
 1. Push your project to a GitHub repository
 2. Go to [vercel.com/new](https://vercel.com/new) → import your repo
-3. Under **Environment Variables**, add all six `VITE_FIREBASE_*` keys
+3. Under **Environment Variables**, add all keys from `.env.local`
+   - Firebase keys: `VITE_FIREBASE_*`
+   - Stripe keys: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`
+   - App URL: `VITE_APP_URL` set to your Vercel deployment URL
 4. Framework preset will be detected as **Vite** automatically
 5. Click **Deploy**
 
@@ -113,26 +136,17 @@ Open `http://localhost:3000`, create an account, and confirm login works before 
 ```bash
 npm install -g vercel
 vercel
-```
-
-Add environment variables:
-```bash
-vercel env add VITE_FIREBASE_API_KEY
-vercel env add VITE_FIREBASE_AUTH_DOMAIN
-vercel env add VITE_FIREBASE_PROJECT_ID
-vercel env add VITE_FIREBASE_STORAGE_BUCKET
-vercel env add VITE_FIREBASE_MESSAGING_SENDER_ID
-vercel env add VITE_FIREBASE_APP_ID
-```
-
-Select **Production**, **Preview**, and **Development** for each. Then:
-```bash
+vercel env add STRIPE_SECRET_KEY
+vercel env add STRIPE_PRICE_STARTER
+vercel env add STRIPE_PRICE_PRO
+vercel env add VITE_APP_URL
+# ... add all VITE_FIREBASE_* vars too
 vercel --prod
 ```
 
 ---
 
-## Step 7 — Add Your Vercel Domain to Firebase
+## Step 8 — Add Your Vercel Domain to Firebase
 
 Google sign-in will fail until you do this.
 
@@ -149,8 +163,12 @@ Repeat for any custom domain you attach later.
 - [ ] Email/Password auth enabled in Firebase Console
 - [ ] Google auth enabled with support email set
 - [ ] Firestore created in production mode
-- [ ] `firestore.rules` deployed
-- [ ] All 6 `VITE_FIREBASE_*` vars set in Vercel dashboard
+- [ ] `firestore.rules` deployed (via Console)
+- [ ] All 6 `VITE_FIREBASE_*` vars set in Vercel
+- [ ] `STRIPE_SECRET_KEY` set in Vercel (test key for now: `sk_test_...`)
+- [ ] `STRIPE_PRICE_STARTER` and `STRIPE_PRICE_PRO` set in Vercel
+- [ ] `VITE_APP_URL` set to your Vercel URL
 - [ ] Vercel domain added to Firebase Authorized Domains
 - [ ] Google sign-in tested on the live Vercel URL
+- [ ] Stripe checkout tested with [test card 4242 4242 4242 4242](https://stripe.com/docs/testing)
 - [ ] `.env.local` is NOT committed to your repo
