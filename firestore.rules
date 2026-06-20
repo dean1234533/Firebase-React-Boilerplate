@@ -30,7 +30,7 @@ service cloud.firestore {
                     && hasOnlyFields(['displayName', 'email', 'photoURL', 'createdAt', 'updatedAt']);
       allow update: if isOwner(userId)
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'photoURL', 'updatedAt']);
-      allow delete: if false; // Use Firebase Auth account deletion instead.
+      allow delete: if isOwner(userId);
 
       // ── Items Subcollection ───────────────────────────────────────────────
       // Only the owning user can read or write their own items.
