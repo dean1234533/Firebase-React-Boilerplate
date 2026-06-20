@@ -61,7 +61,7 @@ const firebaseConfig = {
 
 This project uses **Stripe test mode**. No real charges are made until you switch to live keys.
 
-1. Go to [dashboard.stripe.com/test/dashboard](https://dashboard.stripe.com/test/dashboard)
+1. Go to **https://dashboard.stripe.com/test/dashboard**
 2. **Get your test secret key:**
    - Sidebar → **Developers → API keys**
    - Copy the **Secret key** (`sk_test_...`)
