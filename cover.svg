@@ -38,25 +38,35 @@
 
   <!-- Sub headline -->
   <text x="80" y="376" font-size="22" font-weight="400" fill="#c7d2fe" opacity="0.85">Production-ready React + Firebase boilerplate.</text>
-  <text x="80" y="408" font-size="22" font-weight="400" fill="#c7d2fe" opacity="0.85">Auth, CRUD, and Vercel deployment — done.</text>
+  <text x="80" y="408" font-size="22" font-weight="400" fill="#c7d2fe" opacity="0.85">Auth · Stripe · Dark Mode · CRUD · Vercel — done.</text>
 
-  <!-- Tags -->
-  <rect x="80" y="460" width="130" height="38" rx="8" fill="#ffffff" opacity="0.12"/>
-  <text x="145" y="484" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">⚡ Firebase Auth</text>
+  <!-- Tags row 1 -->
+  <rect x="80" y="450" width="130" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="145" y="473" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">⚡ Firebase Auth</text>
 
-  <rect x="224" y="460" width="120" height="38" rx="8" fill="#ffffff" opacity="0.12"/>
-  <text x="284" y="484" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">📦 CRUD Ready</text>
+  <rect x="222" y="450" width="120" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="282" y="473" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">📦 CRUD Ready</text>
 
-  <rect x="358" y="460" width="140" height="38" rx="8" fill="#ffffff" opacity="0.12"/>
-  <text x="428" y="484" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">🚀 Vercel Deploy</text>
+  <rect x="354" y="450" width="130" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="419" y="473" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">🚀 Vercel Deploy</text>
 
-  <rect x="512" y="460" width="120" height="38" rx="8" fill="#ffffff" opacity="0.12"/>
-  <text x="572" y="484" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">🤖 AI-Ready</text>
+  <!-- Tags row 2 -->
+  <rect x="80" y="498" width="110" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="135" y="521" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">💳 Stripe</text>
+
+  <rect x="202" y="498" width="120" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="262" y="521" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">🌙 Dark Mode</text>
+
+  <rect x="334" y="498" width="120" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="394" y="521" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">⚙️ Settings</text>
+
+  <rect x="466" y="498" width="100" height="36" rx="8" fill="#ffffff" opacity="0.12"/>
+  <text x="516" y="521" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">🤖 AI-Ready</text>
 
   <!-- Save time badge -->
-  <rect x="80" y="560" width="240" height="56" rx="12" fill="#ffffff" opacity="0.1"/>
-  <text x="200" y="587" font-size="13" font-weight="500" fill="#c7d2fe" text-anchor="middle">SAVES YOU</text>
-  <text x="200" y="608" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">20+ Hours of Setup</text>
+  <rect x="80" y="556" width="260" height="56" rx="12" fill="#ffffff" opacity="0.1"/>
+  <text x="210" y="579" font-size="13" font-weight="500" fill="#c7d2fe" text-anchor="middle">SAVES YOU</text>
+  <text x="210" y="600" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">40+ Hours of Setup</text>
 
   <!-- Right side — mock UI card -->
   <g filter="url(#shadow)">
