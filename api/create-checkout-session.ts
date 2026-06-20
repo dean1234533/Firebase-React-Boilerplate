@@ -19,15 +19,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const stripePriceId = PRICE_MAP[priceId];
 
   if (!stripePriceId) {
-    return res.status(400).json({ error: 'Invalid price ID.' });
+    return res.status(400).json({ error: `Invalid price ID: ${priceId}` });
   }
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    line_items: [{ price: stripePriceId, quantity: 1 }],
-    success_url: `${process.env.VITE_APP_URL}/billing?success=true`,
-    cancel_url: `${process.env.VITE_APP_URL}/billing?canceled=true`,
-  });
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      line_items: [{ price: stripePriceId, quantity: 1 }],
+      success_url: `${process.env.VITE_APP_URL}/billing?success=true`,
+      cancel_url: `${process.env.VITE_APP_URL}/billing?canceled=true`,
+    });
 
-  return res.status(200).json({ url: session.url });
+    return res.status(200).json({ url: session.url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[create-checkout-session] FAILED:', message);
+    return res.status(500).json({ error: message });
+  }
 }
