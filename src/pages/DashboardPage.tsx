@@ -102,7 +102,7 @@ export function DashboardPage() {
   // ─── Sign out ────────────────────────────────────────────────────────────────
   async function handleSignOut() {
     await signOut();
-    navigate('/auth', { replace: true });
+    navigate('/auth', { replace: true, state: { signedOut: true } });
   }
 
   // ─── Render ─────────────────────────────────────────────────────────────────
