@@ -177,8 +177,10 @@ export function DashboardPage() {
 
         {/* Page title */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-slate-900">My Items</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            Hello, {user?.displayName || user?.email?.split('@')[0]}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {items.length > 0
               ? `${items.length} item${items.length === 1 ? '' : 's'}`
               : 'No items yet'}
