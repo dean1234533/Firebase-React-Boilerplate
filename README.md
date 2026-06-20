@@ -1,5 +1,10 @@
 # React + Firebase SaaS Starter Kit
 
+![GitHub Stars](https://img.shields.io/github/stars/dean1234533/Firebase-React-Boilerplate?style=flat-square&color=6366f1&label=Stars)
+![GitHub Forks](https://img.shields.io/github/forks/dean1234533/Firebase-React-Boilerplate?style=flat-square&color=6366f1&label=Forks)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/dean1234533/Firebase-React-Boilerplate?style=flat-square&color=6366f1)
+![License](https://img.shields.io/badge/License-Commercial-6366f1?style=flat-square)
+
 **Stop configuring. Start building.**
 
 A production-ready React + Firebase boilerplate with authentication, Firestore CRUD, Stripe billing, dark mode, and Vercel deployment built in. Everything is wired up, secured, and structured so you can ship your SaaS without fighting the stack.
