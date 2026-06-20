@@ -1,68 +1,57 @@
-# SETUP.md — Firebase + Vercel Configuration Walkthrough
+# SETUP.md — From Zero to Deployed
 
-This guide takes you from a blank Firebase project to a live Vercel deployment. Estimated time: 15 minutes.
+Follow these steps in order. Takes about 15 minutes.
 
 ---
 
-## 1. Create a Firebase Project
+## Step 1 — Create a Firebase Project
 
 1. Go to [console.firebase.google.com](https://console.firebase.google.com)
-2. Click **Add project**
-3. Enter a project name and follow the prompts
-4. Disable Google Analytics if you don't need it (optional)
+2. Click **Add project** → name it → disable Google Analytics (optional) → click **Create**
 
 ---
 
-## 2. Enable Authentication
+## Step 2 — Enable Authentication
 
-Firebase Authentication must be configured before any login flow will work.
-
-1. In the Firebase Console sidebar, click **Build → Authentication**
-2. Click **Get started**
-3. Under the **Sign-in method** tab, enable the following providers:
+1. Sidebar → **Build → Authentication** → **Get started**
+2. Click the **Sign-in method** tab and enable:
 
 **Email/Password**
-- Click **Email/Password**
-- Toggle **Enable** on
-- Click **Save**
+- Click **Email/Password** → toggle **Enable** → **Save**
 
 **Google**
-- Click **Google**
-- Toggle **Enable** on
-- Set a support email (required)
-- Click **Save**
+- Click **Google** → toggle **Enable** → add a support email → **Save**
 
-> For local development, `localhost` is already in the Authorized Domains list. For your Vercel deployment, you must add your `.vercel.app` domain (or custom domain) under **Authentication → Settings → Authorized Domains** — otherwise Google login will throw `auth/unauthorized-domain`.
+> After deploying to Vercel, come back here and add your `.vercel.app` domain under **Authentication → Settings → Authorized Domains**. Without this, Google sign-in will fail in production with `auth/unauthorized-domain`.
 
 ---
 
-## 3. Create a Firestore Database
+## Step 3 — Create a Firestore Database
 
-1. In the sidebar, click **Build → Firestore Database**
-2. Click **Create database**
-3. Choose **Start in production mode** — this kit's `firestore.rules` handles access control
-4. Select a region closest to your users
-5. Click **Enable**
+1. Sidebar → **Build → Firestore Database** → **Create database**
+2. Select **Start in production mode**
+3. Choose a region → **Enable**
 
 **Deploy the security rules:**
+
+The `firestore.rules` file in this repo is production-ready. Deploy it now:
 
 ```bash
 npm install -g firebase-tools
 firebase login
-firebase use --add   # select your project and give it an alias, e.g. "default"
+firebase use --add        # select your project, set alias to "default"
 firebase deploy --only firestore:rules
 ```
 
+Or paste the contents of `firestore.rules` directly into the Firebase Console → Firestore → **Rules** tab and click **Publish**.
+
 ---
 
-## 4. Get Your Firebase Web Config Keys
+## Step 4 — Get Your Firebase Config Keys
 
-This is where your `.env.local` and Vercel environment variable values come from.
-
-1. In the Firebase Console, click the **gear icon → Project settings**
-2. Scroll down to **Your apps**
-3. If no web app exists, click the **</>** (Web) icon to register one — name it anything
-4. Copy the config object:
+1. Firebase Console → gear icon → **Project settings**
+2. Scroll to **Your apps** → click the **</>** web icon if no app exists → name it → **Register app**
+3. Copy the config object:
 
 ```js
 const firebaseConfig = {
@@ -75,7 +64,17 @@ const firebaseConfig = {
 };
 ```
 
-5. Paste each value into `.env.local` for local development:
+---
+
+## Step 5 — Configure Environment Variables
+
+**For local development:**
+
+```bash
+cp .env.example .env.local
+```
+
+Open `.env.local` and paste your values:
 
 ```bash
 VITE_FIREBASE_API_KEY=AIza...
@@ -86,43 +85,37 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:abc123
 ```
 
-> `.env.local` is in `.gitignore`. Never commit it. These values go into Vercel separately in the next step.
+> `.env.local` is already in `.gitignore`. Never commit it.
 
----
-
-## 5. Run Locally
+**Test it locally:**
 
 ```bash
 npm install
 npm run dev
 ```
 
-App runs at `http://localhost:3000`. Verify login works before deploying.
+Open `http://localhost:3000`, create an account, and confirm login works before deploying.
 
 ---
 
-## 6. Deploy to Vercel
+## Step 6 — Deploy to Vercel
 
-### Option A — Vercel Dashboard (recommended)
+**Option A — Vercel Dashboard (recommended)**
 
 1. Push your project to a GitHub repository
-2. Go to [vercel.com/new](https://vercel.com/new)
-3. Import your GitHub repository
-4. Under **Environment Variables**, add each of the six `VITE_FIREBASE_*` keys and their values from Step 4
-5. Set **Framework Preset** to `Vite`
-6. Click **Deploy**
+2. Go to [vercel.com/new](https://vercel.com/new) → import your repo
+3. Under **Environment Variables**, add all six `VITE_FIREBASE_*` keys
+4. Framework preset will be detected as **Vite** automatically
+5. Click **Deploy**
 
-Vercel detects the Vite project automatically. The `dist/` output directory and build command (`npm run build`) are configured correctly out of the box.
-
-### Option B — Vercel CLI
+**Option B — Vercel CLI**
 
 ```bash
 npm install -g vercel
 vercel
 ```
 
-Follow the prompts to link your project. Then add environment variables:
-
+Add environment variables:
 ```bash
 vercel env add VITE_FIREBASE_API_KEY
 vercel env add VITE_FIREBASE_AUTH_DOMAIN
@@ -132,46 +125,32 @@ vercel env add VITE_FIREBASE_MESSAGING_SENDER_ID
 vercel env add VITE_FIREBASE_APP_ID
 ```
 
-Select **Production**, **Preview**, and **Development** for each. Then deploy:
-
+Select **Production**, **Preview**, and **Development** for each. Then:
 ```bash
 vercel --prod
 ```
 
 ---
 
-## 7. Add Your Vercel Domain to Firebase Auth
+## Step 7 — Add Your Vercel Domain to Firebase
 
-After your first Vercel deployment, Google login will fail until you whitelist the domain.
+Google sign-in will fail until you do this.
 
-1. Copy your Vercel deployment URL (e.g. `your-app.vercel.app`)
+1. Copy your Vercel URL (e.g. `your-app.vercel.app`)
 2. Firebase Console → **Authentication → Settings → Authorized Domains**
-3. Click **Add domain** and paste your Vercel URL
-4. Repeat for any custom domain you attach later
+3. Click **Add domain** → paste your URL → **Add**
+
+Repeat for any custom domain you attach later.
 
 ---
 
-## 8. SPA Routing on Vercel
+## Pre-Launch Checklist
 
-React Router handles client-side routing, so all paths must serve `index.html`. Vercel handles this automatically for Vite projects — no `vercel.json` configuration is needed.
-
-If you ever add a custom `vercel.json`, include this rewrite rule to preserve routing:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
-
----
-
-## Checklist Before Shipping
-
-- [ ] `.env.local` is in `.gitignore` and not committed to the repo
-- [ ] Email/Password auth is enabled in Firebase Console
-- [ ] Google auth is enabled in Firebase Console
-- [ ] Vercel deployment URL is added to Firebase Authorized Domains
-- [ ] All six `VITE_FIREBASE_*` variables are set in the Vercel dashboard
-- [ ] Firestore is in production mode
-- [ ] `firestore.rules` is deployed (`firebase deploy --only firestore:rules`)
-- [ ] `npm run build` completes without errors locally
+- [ ] Email/Password auth enabled in Firebase Console
+- [ ] Google auth enabled with support email set
+- [ ] Firestore created in production mode
+- [ ] `firestore.rules` deployed
+- [ ] All 6 `VITE_FIREBASE_*` vars set in Vercel dashboard
+- [ ] Vercel domain added to Firebase Authorized Domains
+- [ ] Google sign-in tested on the live Vercel URL
+- [ ] `.env.local` is NOT committed to your repo

@@ -1,0 +1,53 @@
+COMMERCIAL LICENSE AGREEMENT
+React + Firebase SaaS Starter Kit
+
+Copyright (c) 2026. All rights reserved.
+
+GRANT OF LICENSE
+
+This license grants the purchaser ("Licensee") a non-exclusive, non-transferable,
+perpetual right to use the source code, documentation, and associated files
+(collectively, the "Product") for the following permitted uses:
+
+PERMITTED USES
+
+1. Personal Use: You may use this Product to build personal projects.
+2. Commercial Use: You may use this Product as the foundation for a commercial
+   SaaS application or client project, provided the source code itself is not
+   the product being sold.
+3. Modification: You may modify the source code to suit your project needs.
+
+RESTRICTIONS
+
+The following uses are strictly prohibited:
+
+1. Redistribution: You may not redistribute, share, upload, or otherwise make
+   the source code available to any third party, whether for free or for payment.
+
+2. Resale: You may not resell, sublicense, or repackage this Product — or any
+   substantial portion of it — as a standalone product, template, boilerplate,
+   or starter kit.
+
+3. Transfer: You may not transfer your license to another individual or entity.
+
+4. Attribution Removal: You may not remove or obscure this license file from
+   your copy of the Product.
+
+ONE LICENSE PER PROJECT
+
+Each license grants rights for use in a single end product. To use this Product
+in multiple projects, an additional license must be purchased for each project.
+
+INTELLECTUAL PROPERTY
+
+The source code, structure, and documentation remain the intellectual property
+of the original author. This license grants usage rights only — it does not
+transfer ownership.
+
+DISCLAIMER OF WARRANTIES
+
+This Product is provided "as is" without warranty of any kind, express or
+implied. The author is not liable for any damages arising from the use or
+inability to use this Product.
+
+By using this Product, you agree to the terms of this license.
