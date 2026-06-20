@@ -4,7 +4,8 @@
  */
 
 import { useState, FormEvent } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import {
   signInWithEmail,
   signUpWithEmail,
@@ -16,8 +17,7 @@ type Mode = 'login' | 'signup';
 
 export function AuthPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const signedOut = (location.state as { signedOut?: boolean })?.signedOut === true;
+  const { justSignedOut } = useAuth();
 
   const [mode, setMode] = useState<Mode>('login');
   const [displayName, setDisplayName] = useState('');
@@ -108,12 +108,12 @@ export function AuthPage() {
           </div>
 
           <h1 className="text-2xl font-bold text-slate-900 mb-1">
-            {!isLogin ? 'Create your account' : signedOut ? 'You\'ve been signed out' : 'Welcome back'}
+            {!isLogin ? 'Create your account' : justSignedOut ? 'You\'ve been signed out' : 'Welcome back'}
           </h1>
           <p className="text-slate-500 text-sm mb-8">
             {!isLogin
               ? 'Get started for free today.'
-              : signedOut
+              : justSignedOut
               ? 'Sign in again to continue.'
               : 'Enter your credentials to continue.'}
           </p>
