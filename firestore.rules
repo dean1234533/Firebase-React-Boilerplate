@@ -40,8 +40,9 @@ service cloud.firestore {
         allow read:   if isOwner(userId);
         allow create: if isOwner(userId)
                       && hasOnlyFields(['text', 'createdAt']);
+        allow update: if isOwner(userId)
+                      && hasOnlyFields(['text', 'updatedAt']);
         allow delete: if isOwner(userId);
-        allow update: if false; // Items are immutable — delete and re-add to change.
       }
     }
 

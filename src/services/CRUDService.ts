@@ -1,19 +1,29 @@
 /**
- * CRUDService.ts — Domain service for the user's "items" collection.
+ * CRUDService.ts — Full CRUD + real-time subscription for users/{uid}/items.
  *
  * Rules:
- *  - Wraps generic FirestoreService helpers — never calls Firestore SDK directly.
- *  - Collection path: users/{uid}/items/{itemId}
- *  - Every function has try/catch and logs [CRUDService] + error.code on failure.
+ *  - subscribeToItems uses onSnapshot for live updates — call the returned
+ *    unsubscribe function in your useEffect cleanup to avoid memory leaks.
+ *  - All write functions (add, update, delete) wrap FirestoreService helpers.
+ *  - Every function logs [CRUDService] + error.code on failure.
  *
  * Chrome DevTools tip:
- *  - Filter console by "[CRUDService]" to isolate item read/write logs.
+ *  - Filter console by "[CRUDService]" to trace all item reads/writes.
  */
 
-import { orderBy, Timestamp } from 'firebase/firestore';
 import {
-  queryCollection,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  Timestamp,
+  FirestoreError,
+} from 'firebase/firestore';
+import { FirebaseError } from 'firebase/app';
+import { db } from '@/firebase/firebase';
+import {
   addDocument,
+  updateDocument,
   deleteDocument,
   ServiceResult,
 } from '@/services/FirestoreService';
@@ -24,6 +34,7 @@ export interface Item {
   id: string;
   text: string;
   createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -32,20 +43,46 @@ function itemsPath(uid: string): string {
   return `users/${uid}/items`;
 }
 
-// ─── Read ──────────────────────────────────────────────────────────────────────
+// ─── Real-time Subscription ────────────────────────────────────────────────────
 
-export async function getItems(uid: string): Promise<ServiceResult<Item[]>> {
-  try {
-    const result = await queryCollection<Item>(itemsPath(uid), [
-      orderBy('createdAt', 'desc'),
-    ]);
-    console.log(`[CRUDService] getItems: fetched ${result.data?.length ?? 0} items for uid=${uid}`);
-    return result;
-  } catch (err) {
-    const error = err as { code: string; message: string };
-    console.error('[CRUDService] getItems: FAILED', { code: error.code, message: error.message });
-    return { data: null, error: error.code };
-  }
+/**
+ * Subscribes to the user's items collection in real time.
+ * Returns an unsubscribe function — call it in your useEffect cleanup.
+ *
+ * Usage:
+ *   useEffect(() => {
+ *     const unsub = subscribeToItems(uid, setItems, setError);
+ *     return unsub;
+ *   }, [uid]);
+ */
+export function subscribeToItems(
+  uid: string,
+  onData: (items: Item[]) => void,
+  onError: (message: string) => void
+): () => void {
+  const ref = collection(db, itemsPath(uid));
+  const q = query(ref, orderBy('createdAt', 'desc'));
+
+  const unsubscribe = onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      })) as Item[];
+      console.log(`[CRUDService] subscribeToItems: ${items.length} items for uid=${uid}`);
+      onData(items);
+    },
+    (err: FirestoreError) => {
+      console.error('[CRUDService] subscribeToItems: FAILED', {
+        code: err.code,
+        message: err.message,
+      });
+      onError(`Failed to load items (${err.code})`);
+    }
+  );
+
+  return unsubscribe;
 }
 
 // ─── Create ────────────────────────────────────────────────────────────────────
@@ -59,8 +96,26 @@ export async function addItem(
     console.log(`[CRUDService] addItem: created id=${result.data} for uid=${uid}`);
     return result;
   } catch (err) {
-    const error = err as { code: string; message: string };
+    const error = err as FirebaseError;
     console.error('[CRUDService] addItem: FAILED', { code: error.code, message: error.message });
+    return { data: null, error: error.code };
+  }
+}
+
+// ─── Update ────────────────────────────────────────────────────────────────────
+
+export async function updateItem(
+  uid: string,
+  itemId: string,
+  text: string
+): Promise<ServiceResult<null>> {
+  try {
+    const result = await updateDocument(itemsPath(uid), itemId, { text });
+    console.log(`[CRUDService] updateItem: updated id=${itemId} for uid=${uid}`);
+    return result;
+  } catch (err) {
+    const error = err as FirebaseError;
+    console.error('[CRUDService] updateItem: FAILED', { code: error.code, message: error.message });
     return { data: null, error: error.code };
   }
 }
@@ -76,7 +131,7 @@ export async function deleteItem(
     console.log(`[CRUDService] deleteItem: deleted id=${itemId} for uid=${uid}`);
     return result;
   } catch (err) {
-    const error = err as { code: string; message: string };
+    const error = err as FirebaseError;
     console.error('[CRUDService] deleteItem: FAILED', { code: error.code, message: error.message });
     return { data: null, error: error.code };
   }
