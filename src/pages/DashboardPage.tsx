@@ -6,6 +6,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/context/ThemeContext';
 import { signOut } from '@/services/AuthService';
 import {
   subscribeToItems,
@@ -17,6 +18,7 @@ import {
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const [items, setItems] = useState<Item[]>([]);
@@ -107,16 +109,16 @@ export function DashboardPage() {
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans transition-colors">
 
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
               <div className="h-3.5 w-3.5 rounded-sm bg-white" />
             </div>
-            <span className="font-semibold text-slate-900 tracking-tight">Starter Kit</span>
+            <span className="font-semibold text-slate-900 dark:text-white tracking-tight">Starter Kit</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -128,20 +130,42 @@ export function DashboardPage() {
               </div>
             )}
             <div className="hidden sm:flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
                 {user?.email?.[0]?.toUpperCase() ?? '?'}
               </div>
-              <span className="text-sm text-slate-600">{user?.email}</span>
+              <span className="text-sm text-slate-600 dark:text-slate-300">{user?.email}</span>
             </div>
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+            >
+              {theme === 'dark' ? (
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 1.78a1 1 0 011.42 1.42l-.7.7a1 1 0 11-1.42-1.42l.7-.7zM18 9a1 1 0 110 2h-1a1 1 0 110-2h1zM5.78 15.78a1 1 0 01-1.42-1.42l.7-.7a1 1 0 111.42 1.42l-.7.7zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-1.78a1 1 0 00-1.42 1.42l-.7-.7a1 1 0 011.42-1.42l.7.7zM3 10a1 1 0 110-2H2a1 1 0 110 2h1zm11.22 3.78a1 1 0 011.42 1.42l-.7-.7a1 1 0 11-1.42-1.42l.7.7zM10 6a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+              )}
+            </button>
+            <Link
+              to="/billing"
+              className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+            >
+              Billing
+            </Link>
             <Link
               to="/settings"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               Settings
             </Link>
             <button
               onClick={handleSignOut}
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               Sign Out
             </button>
