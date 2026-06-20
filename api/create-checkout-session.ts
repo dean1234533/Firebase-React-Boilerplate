@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
+  apiVersion: '2026-05-27.dahlia',
 });
 
 const PRICE_MAP: Record<string, string> = {
