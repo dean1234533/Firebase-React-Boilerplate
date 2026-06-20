@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ──────────────────────────────────────────────────────
+
+    // True when the request comes from a logged-in user.
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // True when the authenticated user's UID matches the document owner field.
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validates that an incoming write only contains the listed keys.
+    function hasOnlyFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ── Users Collection ──────────────────────────────────────────────────────
+    // Each user can only read and write their own profile document.
+    // Document ID == Firebase Auth UID (enforced by the app layer).
+
+    match /users/{userId} {
+      allow read:   if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && hasOnlyFields(['displayName', 'email', 'photoURL', 'createdAt', 'updatedAt']);
+      allow update: if isOwner(userId)
+                    && hasOnlyFields(['displayName', 'photoURL', 'updatedAt']);
+      allow delete: if false; // Use Firebase Auth account deletion instead.
+
+      // ── Items Subcollection ───────────────────────────────────────────────
+      // Only the owning user can read or write their own items.
+      // Create is field-validated; update is disabled (delete + re-add instead).
+
+      match /items/{itemId} {
+        allow read:   if isOwner(userId);
+        allow create: if isOwner(userId)
+                      && hasOnlyFields(['text', 'createdAt']);
+        allow delete: if isOwner(userId);
+        allow update: if false; // Items are immutable — delete and re-add to change.
+      }
+    }
+
+    // ── Default Deny ─────────────────────────────────────────────────────────
+    // Any collection not explicitly matched above is denied.
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
