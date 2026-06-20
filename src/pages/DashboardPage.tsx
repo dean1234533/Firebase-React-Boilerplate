@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/services/AuthService';
 import {
@@ -133,6 +133,12 @@ export function DashboardPage() {
               </div>
               <span className="text-sm text-slate-600">{user?.email}</span>
             </div>
+            <Link
+              to="/settings"
+              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              Settings
+            </Link>
             <button
               onClick={handleSignOut}
               className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
