@@ -5,17 +5,14 @@ service cloud.firestore {
 
     // ── Helper Functions ──────────────────────────────────────────────────────
 
-    // True when the request comes from a logged-in user.
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // True when the authenticated user's UID matches the document owner field.
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Validates that an incoming write only contains the listed keys.
     function hasOnlyFields(fields) {
       return request.resource.data.keys().hasOnly(fields);
     }
@@ -23,25 +20,30 @@ service cloud.firestore {
     // ── Users Collection ──────────────────────────────────────────────────────
     // Each user can only read and write their own profile document.
     // Document ID == Firebase Auth UID (enforced by the app layer).
+    //
+    // Subscription status (stripeCustomerId, subscriptionStatus, plan) is
+    // written server-side via Admin SDK (Stripe webhook → Vercel function)
+    // and is therefore not subject to these client rules.
 
     match /users/{userId} {
       allow read:   if isOwner(userId);
       allow create: if isOwner(userId)
                     && hasOnlyFields(['displayName', 'email', 'photoURL', 'createdAt', 'updatedAt']);
       allow update: if isOwner(userId)
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'photoURL', 'updatedAt']);
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['displayName', 'photoURL', 'updatedAt']);
       allow delete: if isOwner(userId);
 
       // ── Items Subcollection ───────────────────────────────────────────────
       // Only the owning user can read or write their own items.
-      // Create is field-validated; update is disabled (delete + re-add instead).
 
       match /items/{itemId} {
         allow read:   if isOwner(userId);
         allow create: if isOwner(userId)
                       && hasOnlyFields(['text', 'createdAt']);
         allow update: if isOwner(userId)
-                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'updatedAt']);
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['text', 'updatedAt']);
         allow delete: if isOwner(userId);
       }
     }
