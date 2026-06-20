@@ -29,7 +29,7 @@ service cloud.firestore {
       allow create: if isOwner(userId)
                     && hasOnlyFields(['displayName', 'email', 'photoURL', 'createdAt', 'updatedAt']);
       allow update: if isOwner(userId)
-                    && hasOnlyFields(['displayName', 'photoURL', 'updatedAt']);
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'photoURL', 'updatedAt']);
       allow delete: if false; // Use Firebase Auth account deletion instead.
 
       // ── Items Subcollection ───────────────────────────────────────────────
@@ -41,7 +41,7 @@ service cloud.firestore {
         allow create: if isOwner(userId)
                       && hasOnlyFields(['text', 'createdAt']);
         allow update: if isOwner(userId)
-                      && hasOnlyFields(['text', 'updatedAt']);
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'updatedAt']);
         allow delete: if isOwner(userId);
       }
     }
