@@ -1,8 +1,3 @@
-/**
- * AuthPage.tsx — Login / Sign-up with SaaS-grade design.
- * No Firebase SDK imports — all calls go through AuthService.
- */
-
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -71,7 +66,7 @@ export function AuthPage() {
   const isLogin = mode === 'login';
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
 
       {/* Left panel — branding (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 flex-col justify-between p-12">
@@ -104,13 +99,13 @@ export function AuthPage() {
             <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
               <div className="w-3.5 h-3.5 bg-white rounded-sm" />
             </div>
-            <span className="text-slate-900 font-semibold text-lg tracking-tight">Starter Kit</span>
+            <span className="text-slate-900 dark:text-white font-semibold text-lg tracking-tight">Starter Kit</span>
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-900 mb-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
             {!isLogin ? 'Create your account' : justSignedOut ? 'You\'ve been signed out' : 'Welcome back'}
           </h1>
-          <p className="text-slate-500 text-sm mb-8">
+          <p className="text-slate-500 dark:text-slate-400 text-sm mb-8">
             {!isLogin
               ? 'Get started for free today.'
               : justSignedOut
@@ -120,11 +115,11 @@ export function AuthPage() {
 
           {/* Error */}
           {error && (
-            <div className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+            <div className="mb-5 flex items-start gap-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 px-4 py-3">
               <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
               </svg>
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
@@ -136,20 +131,20 @@ export function AuthPage() {
 
             {!isLogin && (
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-700">Full name</label>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Full name</label>
                 <input
                   type="text"
                   placeholder="Jane Smith"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   disabled={loading}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
                 />
               </div>
             )}
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">Email address</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Email address</label>
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -157,12 +152,12 @@ export function AuthPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
               <input
                 type="password"
                 placeholder={isLogin ? '••••••••' : 'Min. 6 characters'}
@@ -171,7 +166,7 @@ export function AuthPage() {
                 required
                 disabled={loading}
                 autoComplete="new-password"
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
               />
             </div>
 
@@ -189,9 +184,9 @@ export function AuthPage() {
 
           {/* Divider */}
           <div className="my-5 flex items-center gap-3">
-            <hr className="flex-1 border-slate-200" />
-            <span className="text-xs text-slate-400">or</span>
-            <hr className="flex-1 border-slate-200" />
+            <hr className="flex-1 border-slate-200 dark:border-slate-700" />
+            <span className="text-xs text-slate-400 dark:text-slate-500">or</span>
+            <hr className="flex-1 border-slate-200 dark:border-slate-700" />
           </div>
 
           {/* Google */}
@@ -199,19 +194,19 @@ export function AuthPage() {
             type="button"
             onClick={handleGoogle}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-50"
           >
             <GoogleIcon />
             Continue with Google
           </button>
 
           {/* Mode toggle */}
-          <p className="mt-6 text-center text-sm text-slate-500">
+          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               type="button"
               onClick={() => switchMode(isLogin ? 'signup' : 'login')}
-              className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+              className="font-semibold text-indigo-600 hover:text-indigo-500 hover:underline"
             >
               {isLogin ? 'Sign Up' : 'Sign In'}
             </button>
