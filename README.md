@@ -4,12 +4,20 @@
 ![GitHub Forks](https://img.shields.io/github/forks/dean1234533/Firebase-React-Boilerplate?style=flat-square&color=6366f1&label=Forks)
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/dean1234533/Firebase-React-Boilerplate?style=flat-square&color=6366f1)
 ![License](https://img.shields.io/badge/License-Commercial-6366f1?style=flat-square)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)
+![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
 **Stop configuring. Start building.**
 
 A production-ready React + Firebase boilerplate with authentication, Firestore CRUD, Stripe billing, dark mode, and Vercel deployment built in. Everything is wired up, secured, and structured so you can ship your SaaS without fighting the stack.
 
 **Live Demo:** [firebase-react-boilerplate.vercel.app](https://firebase-react-boilerplate.vercel.app)
+
+![React + Firebase SaaS Starter Kit](cover.png)
 
 ---
 
@@ -99,8 +107,8 @@ This kit does.
 
 **1. Clone**
 ```bash
-git clone https://github.com/your-username/firebase-starter-kit.git
-cd firebase-starter-kit
+git clone https://github.com/dean1234533/Firebase-React-Boilerplate.git
+cd Firebase-React-Boilerplate
 ```
 
 **2. Install**
@@ -198,3 +206,12 @@ VITE_APP_URL
 ## License
 
 See [LICENSE.txt](LICENSE.txt). Commercial use permitted. Redistribution and resale of source code prohibited.
+
+---
+
+## Author
+
+Built by **Dean Da Dev**, a UK full-stack developer building web apps, websites,
+and AI tools.
+
+🌐 [dean-da-dev.co.uk](https://www.dean-da-dev.co.uk/) · 💼 [More projects](https://www.dean-da-dev.co.uk/portfolio) · 🐙 [GitHub](https://github.com/dean1234533)
